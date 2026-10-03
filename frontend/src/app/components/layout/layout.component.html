@@ -1,0 +1,106 @@
+<div class="layout-wrapper">
+  <!-- Sidenav Stitch: 260px fixa na esquerda -->
+  <aside class="stitch-sidebar">
+    <div class="sidebar-top">
+      <!-- Marca da Clínica -->
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <span class="material-symbols-outlined">psychology</span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">PSI Clínica</span>
+          <span class="brand-subtitle">Gestão Psicológica</span>
+        </div>
+      </div>
+
+      <!-- Links de Navegação -->
+      <nav class="sidebar-nav">
+        <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <span class="material-symbols-outlined">space_dashboard</span>
+          <span>Dashboard</span>
+        </a>
+
+        <a class="nav-item" routerLink="/pacientes" routerLinkActive="active">
+          <span class="material-symbols-outlined">group</span>
+          <span>Pacientes</span>
+        </a>
+
+        <a class="nav-item" routerLink="/psicologos" routerLinkActive="active">
+          <span class="material-symbols-outlined">clinical_notes</span>
+          <span>Psicólogos</span>
+        </a>
+
+        <!-- Seção Cadastros -->
+        <div class="nav-section-title">Cadastros Base</div>
+
+        <a class="nav-item active-pill" routerLink="/estados" routerLinkActive="active">
+          <span class="material-symbols-outlined">public</span>
+          <span>Estados</span>
+        </a>
+
+        <a class="nav-item" routerLink="/municipios" routerLinkActive="active">
+          <span class="material-symbols-outlined">location_city</span>
+          <span>Municípios</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Rodapé da Sidebar: Perfil da Psicóloga / Admin -->
+    <div class="sidebar-footer">
+      <div class="profile-card">
+        <div class="profile-avatar">
+          <span>HM</span>
+        </div>
+        <div class="profile-info">
+          <span class="profile-name">Dra. Helena Martins</span>
+          <span class="profile-role">Admin · CRP 08/21940</span>
+        </div>
+        <button class="logout-btn" title="Encerrar Sessão">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Área Principal (Main + Top Header) -->
+  <div class="main-shell">
+    <!-- Top Header Stitch -->
+    <header class="stitch-header">
+      <div class="header-left">
+        <div class="breadcrumb-trail">
+          <span class="breadcrumb-root">Sistema Clínico</span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">Cadastros</span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-highlight">Estados</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <!-- Barra de Busca Global -->
+        <div class="search-pill">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input type="text" placeholder="Buscar no sistema clínico..." />
+        </div>
+
+        <!-- Botão Notificações -->
+        <button class="icon-button notification-btn" title="Notificações">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="dot-indicator"></span>
+        </button>
+
+        <!-- Chip de Perfil do Topo -->
+        <div class="header-user-chip">
+          <div class="user-avatar-sm">HM</div>
+          <span class="user-name">Dra. Helena</span>
+          <span class="material-symbols-outlined dropdown-icon">expand_more</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Conteúdo da Rota Dinâmica -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

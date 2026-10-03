@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "legacy-tp2": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/janioeliasteixeirajunior/Documents/Unitins/2026-2/TP2/Quarkus/sga",
+        "/Users/janioeliasteixeirajunior/Documents/Unitins/2026-2/TP2/ProjetoAngular/hello-world-angular"
+      ]
+    }
+  }
+}

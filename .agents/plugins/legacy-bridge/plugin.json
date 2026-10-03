@@ -1,0 +1,4 @@
+{
+  "name": "legacy-bridge",
+  "description": "Ponte MCP para consulta e migração de código dos projetos legados TP2 (sga e hello-world-angular) para o PSI"
+}
