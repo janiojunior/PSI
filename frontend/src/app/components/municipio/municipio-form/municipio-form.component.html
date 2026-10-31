@@ -1,0 +1,145 @@
+<div class="form-page-container">
+  <!-- Barra de Breadcrumbs & Ações de Topo -->
+  <div class="form-header-context">
+    <div class="breadcrumb-and-title">
+      <nav aria-label="Navegação" class="form-breadcrumbs">
+        <a routerLink="/municipios" class="breadcrumb-link">
+          <span class="material-symbols-outlined">location_city</span>
+          <span>Municípios</span>
+        </a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">{{ isEditMode ? 'Editar Cadastro' : 'Novo Cadastro' }}</span>
+      </nav>
+
+      <div class="title-row">
+        <h1 class="main-title">{{ isEditMode ? 'Editar Município' : 'Cadastrar Novo Município' }}</h1>
+        <span class="status-pill">{{ isEditMode ? 'Edição Ativa' : 'Parametrização Municipal' }}</span>
+      </div>
+    </div>
+
+    <!-- Quick info badge -->
+    <div class="system-context-badge">
+      <div class="pulse-dot"></div>
+      <div class="badge-text">
+        <span class="badge-label">Módulo do Sistema</span>
+        <span class="badge-value">Tabelas Básicas · Municípios</span>
+      </div>
+    </div>
+  </div>
+
+  @if (carregando || municipioService.loading() || estadoService.loading()) {
+    <mat-progress-bar mode="indeterminate" class="stitch-progress-bar"></mat-progress-bar>
+  }
+
+  <!-- Card Principal de Formulário no Padrão Stitch -->
+  <div class="form-card">
+    <div class="card-ambient-gradient"></div>
+
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="form-content">
+      <!-- Seção: Identificação Municipal -->
+      <section class="form-section">
+        <div class="section-header">
+          <div class="section-icon">
+            <span class="material-symbols-outlined">location_city</span>
+          </div>
+          <div class="section-info">
+            <h2 class="section-title">1. Identificação Municipal</h2>
+            <p class="section-subtitle">Definição cadastral do município e seu vínculo com a Unidade Federativa correspondente.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <!-- Campo Nome do Município -->
+          <div class="form-group col-nome">
+            <label for="nome" class="field-label">
+              Nome do Município <span class="required-mark">*</span>
+            </label>
+            <div class="input-container">
+              <input
+                id="nome"
+                type="text"
+                formControlName="nome"
+                maxlength="60"
+                placeholder="Ex: Palmas, Araguaína, São Paulo..."
+                class="field-input"
+                [class.has-error]="form.get('nome')?.invalid && form.get('nome')?.touched"
+              />
+              <span class="material-symbols-outlined input-icon">location_city</span>
+            </div>
+            @if (form.get('nome')?.invalid && form.get('nome')?.touched) {
+              <p class="error-msg">
+                <span class="material-symbols-outlined">error</span>
+                <span>O nome é obrigatório e deve conter entre 2 e 60 caracteres.</span>
+              </p>
+            } @else {
+              <p class="field-hint">Nome oficial do município (entre 2 e 60 caracteres).</p>
+            }
+          </div>
+
+          <!-- Campo Estado (UF) -->
+          <div class="form-group col-estado">
+            <label for="estadoId" class="field-label">
+              Estado (UF) <span class="required-mark">*</span>
+            </label>
+            <div class="input-container">
+              <select
+                id="estadoId"
+                formControlName="estadoId"
+                class="field-input field-select"
+                [class.has-error]="form.get('estadoId')?.invalid && form.get('estadoId')?.touched"
+              >
+                <option [ngValue]="null" disabled>Selecione um estado...</option>
+                @for (estado of estadoService.estados(); track estado.id) {
+                  <option [ngValue]="estado.id">{{ estado.nome }} ({{ estado.sigla }})</option>
+                }
+              </select>
+              <span class="material-symbols-outlined input-icon">public</span>
+            </div>
+            @if (form.get('estadoId')?.invalid && form.get('estadoId')?.touched) {
+              <p class="error-msg">
+                <span class="material-symbols-outlined">error</span>
+                <span>O estado é obrigatório.</span>
+              </p>
+            } @else {
+              <p class="field-hint">Unidade Federativa à qual o município pertence.</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Barra de Ações do Formulário -->
+      <div class="form-actions-bar">
+        <div class="actions-left">
+          <button type="button" (click)="voltar()" class="btn-back">
+            <span class="material-symbols-outlined">arrow_back</span>
+            <span>Voltar para Lista</span>
+          </button>
+        </div>
+
+        <div class="actions-right">
+          @if (isEditMode) {
+            <button
+              type="button"
+              (click)="excluir()"
+              [disabled]="municipioService.loading()"
+              class="btn-delete"
+              title="Excluir este município"
+            >
+              <span class="material-symbols-outlined">delete</span>
+              <span>Excluir</span>
+            </button>
+          }
+
+          <button
+            type="submit"
+            [disabled]="form.invalid || municipioService.loading()"
+            class="btn-save"
+          >
+            <span class="material-symbols-outlined">check</span>
+            <span>{{ isEditMode ? 'Salvar Alterações' : 'Cadastrar Município' }}</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

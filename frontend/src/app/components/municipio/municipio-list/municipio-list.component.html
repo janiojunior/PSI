@@ -1,0 +1,173 @@
+<div class="page-container">
+  <!-- Header da Página no Padrão Stitch -->
+  <div class="page-header">
+    <div class="header-titles">
+      <div class="title-with-badge">
+        <h1 class="page-title">Municípios</h1>
+        <span class="count-badge">{{ municipioService.municipios().length }} cadastrados</span>
+      </div>
+      <p class="page-subtitle">Gerenciamento e parametrização cadastral de municípios vinculados às unidades federativas.</p>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn-secondary" title="Exportar dados">
+        <span class="material-symbols-outlined">file_download</span>
+        <span>Exportar</span>
+      </button>
+
+      <a routerLink="/municipios/novo" class="btn-primary">
+        <span class="material-symbols-outlined">add</span>
+        <span>+ Novo Município</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Card de Filtros e Busca Rápida -->
+  <div class="filter-card">
+    <div class="filter-card-header">
+      <div class="filter-title">
+        <span class="material-symbols-outlined">filter_alt</span>
+        <span>Filtrar municípios</span>
+      </div>
+      <span class="filter-hint">Busca instantânea por município, estado ou UF</span>
+    </div>
+
+    <div class="filter-controls">
+      <div class="search-input-wrapper">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input
+          type="text"
+          [(ngModel)]="filtroTexto"
+          (ngModelChange)="aplicarFiltro()"
+          placeholder="Digite o nome do município, estado ou sigla (ex: Palmas, TO, São Paulo)..."
+          aria-label="Filtrar municípios por nome, estado ou sigla"
+          class="stitch-input"
+        />
+        @if (filtroTexto) {
+          <button type="button" (click)="limparFiltro()" class="clear-input-btn" title="Limpar busca">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        }
+      </div>
+
+      <div class="filter-actions">
+        <button type="button" (click)="limparFiltro()" class="btn-filter-clear">
+          <span class="material-symbols-outlined">restart_alt</span>
+          <span>Limpar</span>
+        </button>
+        <button type="button" (click)="aplicarFiltro()" class="btn-filter-apply">
+          <span class="material-symbols-outlined">search</span>
+          <span>Filtrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de Progresso quando estiver carregando dados -->
+  @if (municipioService.loading()) {
+    <mat-progress-bar mode="indeterminate" class="stitch-progress-bar"></mat-progress-bar>
+  }
+
+  <!-- Tabela de Dados no Padrão MatTable com Design Stitch -->
+  <div class="table-card">
+    <div class="table-responsive">
+      <table mat-table [dataSource]="dataSource" class="stitch-table">
+
+        <!-- Coluna Avatar/Badge UF -->
+        <ng-container matColumnDef="ufPill">
+          <th mat-header-cell *matHeaderCellDef class="col-pill">UF</th>
+          <td mat-cell *matCellDef="let municipio" class="col-pill">
+            <div class="uf-badge">
+              {{ municipio.estado?.sigla }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Coluna Nome do Município -->
+        <ng-container matColumnDef="nome">
+          <th mat-header-cell *matHeaderCellDef>Nome do Município</th>
+          <td mat-cell *matCellDef="let municipio" class="font-bold text-main">
+            {{ municipio.nome }}
+          </td>
+        </ng-container>
+
+        <!-- Coluna Estado -->
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Unidade Federativa</th>
+          <td mat-cell *matCellDef="let municipio" class="font-medium text-primary">
+            {{ municipio.estado?.nome }} ({{ municipio.estado?.sigla }})
+          </td>
+        </ng-container>
+
+        <!-- Coluna ID -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>Código</th>
+          <td mat-cell *matCellDef="let municipio" class="text-muted font-mono">
+            #{{ municipio.id ? (municipio.id < 10 ? '0' + municipio.id : municipio.id) : '-' }}
+          </td>
+        </ng-container>
+
+        <!-- Coluna Ações -->
+        <ng-container matColumnDef="acoes">
+          <th mat-header-cell *matHeaderCellDef class="text-right">Ações</th>
+          <td mat-cell *matCellDef="let municipio" class="text-right">
+            <div class="action-buttons-group">
+              <button
+                type="button"
+                class="action-btn edit-btn"
+                (click)="editar(municipio.id)"
+                title="Editar este município"
+              >
+                <span class="material-symbols-outlined">edit</span>
+              </button>
+              <button
+                type="button"
+                class="action-btn delete-btn"
+                (click)="excluir(municipio)"
+                title="Excluir este município"
+              >
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Linhas do Cabeçalho e Dados -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="stitch-table-row"></tr>
+
+        <!-- Estado Vazio / Sem Resultados -->
+        <tr class="mat-row empty-data-row" *matNoDataRow>
+          <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+            <div class="empty-state">
+              <span class="material-symbols-outlined empty-icon">location_city</span>
+              <p class="empty-title">Nenhum município encontrado</p>
+              <p class="empty-subtitle">
+                @if (filtroTexto) {
+                  Nenhum registro coincide com o filtro "{{ filtroTexto }}".
+                } @else {
+                  Ainda não existem municípios cadastrados no sistema.
+                }
+              </p>
+              @if (filtroTexto) {
+                <button type="button" class="btn-clear-empty" (click)="limparFiltro()">
+                  Limpar filtro de busca
+                </button>
+              }
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Paginador Angular Material -->
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 20]"
+      [pageSize]="10"
+      showFirstLastButtons
+      class="stitch-paginator"
+      aria-label="Selecione a página de municípios"
+    >
+    </mat-paginator>
+  </div>
+</div>

@@ -1,0 +1,155 @@
+@startuml modelo_dados_psi
+hide empty methods
+skinparam shadowing false
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor #FFFFFF
+    BorderColor #2C3E50
+    HeaderBackgroundColor #ECF0F1
+    FontColor #2C3E50
+}
+
+title Modelo de Dados do Backend - PSI (com.example.model)
+
+package "com.example.model" {
+
+    class DefaultEntity <<MappedSuperclass>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - dataCadastro : LocalDateTime <<TIMESTAMP>>
+        - dataAlteracao : LocalDateTime <<TIMESTAMP>>
+    }
+
+    class Estado <<Entity>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - sigla : String <<VARCHAR(2), NOT NULL>>
+        - nome : String <<VARCHAR(100), NOT NULL>>
+    }
+
+    enum Regiao <<Proposto>> {
+        CENTRO_OESTE
+        NORTE
+        NORDESTE
+        SUDESTE
+        SUL
+        --
+        - id : Long
+        - nome : String
+    }
+
+    class Municipio <<Entity>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - nome : String <<VARCHAR(60), NOT NULL>>
+    }
+
+    class Pessoa <<Proposto>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - nome : String <<VARCHAR(120), NOT NULL>>
+        - cpf : String <<VARCHAR(11), NOT NULL, UNIQUE>>
+        - email : String <<VARCHAR(120), NOT NULL, UNIQUE>>
+        - dataNascimento : LocalDate <<DATE, NOT NULL>>
+        - genero : String <<VARCHAR(30)>>
+        - endereco : String <<VARCHAR(255)>>
+        - dataCadastro : LocalDateTime <<TIMESTAMP>>
+        - dataAlteracao : LocalDateTime <<TIMESTAMP>>
+    }
+
+    class Telefone <<Proposto>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - codigoArea : String <<VARCHAR(3), NOT NULL>>
+        - numero : String <<VARCHAR(15), NOT NULL>>
+        - whatsapp : Boolean <<BOOLEAN, NOT NULL>>
+        - dataCadastro : LocalDateTime <<TIMESTAMP>>
+        - dataAlteracao : LocalDateTime <<TIMESTAMP>>
+    }
+
+    class Paciente <<Proposto>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - observacoes : String <<TEXT>>
+        - ativo : Boolean <<BOOLEAN, NOT NULL>>
+        - dataCadastro : LocalDateTime <<TIMESTAMP>>
+        - dataAlteracao : LocalDateTime <<TIMESTAMP>>
+    }
+
+    class Psicologo <<Proposto>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - crp : String <<VARCHAR(20), NOT NULL, UNIQUE>>
+        - especialidade : String <<VARCHAR(120), NOT NULL>>
+        - bio : String <<TEXT>>
+        - valorConsulta : BigDecimal <<NUMERIC(10,2), NOT NULL>>
+        - duracaoConsulta : Integer <<INTEGER, NOT NULL>>
+        - ativo : Boolean <<BOOLEAN, NOT NULL>>
+        - dataCadastro : LocalDateTime <<TIMESTAMP>>
+        - dataAlteracao : LocalDateTime <<TIMESTAMP>>
+    }
+
+    class Usuario <<Proposto>> {
+        - id : Long <<PK, BIGSERIAL>>
+        --
+        - login : String <<VARCHAR(120), NOT NULL, UNIQUE>>
+        - senha : String <<VARCHAR(255), NOT NULL>>
+        - ativo : Boolean <<BOOLEAN, NOT NULL>>
+        - dataCadastro : LocalDateTime <<TIMESTAMP>>
+        - dataAlteracao : LocalDateTime <<TIMESTAMP>>
+    }
+
+    enum Perfil <<Proposto>> {
+        ADMINISTRADOR
+        ATENDENTE
+        PACIENTE
+        PSICOLOGO
+        --
+        - id : Long
+        - nome : String
+    }
+
+    Municipio "0..*" --> "1" Estado : pertence a >
+    Estado "0..*" --> "0..1" Regiao : classificado em (legado) >
+
+    Pessoa "1" *-- "1..*" Telefone : possui >
+    Pessoa "0..*" --> "0..1" Municipio : reside em (proposto) >
+
+    Paciente "0..1" --> "1" Pessoa : identifica-se como >
+    Psicologo "0..1" --> "1" Pessoa : identifica-se como >
+    Usuario "0..1" --> "1" Pessoa : vincula-se a >
+
+    Usuario "0..*" --> "1..*" Perfil : possui >
+
+}
+
+note right of Estado
+  **Tabela:** estado
+  **Migrations:**
+  - V1.0.0__Create_estado_table.sql
+  - V1.0.1__adjust_legacy_estado_columns.sql
+  **Pendências:**
+  - Definir constraint UNIQUE em sigla
+  - Definir manutenção ou descarte de Regiao
+end note
+
+note right of Municipio
+  **Tabela:** municipio
+  **Migrations:**
+  - V1.0.2__Create_municipio_table.sql
+end note
+
+note right of DefaultEntity
+  **Decisão Pendente (Auditoria):**
+  No legado (SGA), as entidades herdam DefaultEntity.
+  No PSI, Estado foi criado sem herança de auditoria.
+end note
+
+note bottom of Pessoa
+  **Decisões Pendentes (Domínio):**
+  1. Vínculo formal entre Pessoa e Municipio (atualmente endereco é texto livre).
+  2. Escopo Multi-Tenant para unicidades (cpf, email, crp, login, sigla).
+end note
+
+@enduml
