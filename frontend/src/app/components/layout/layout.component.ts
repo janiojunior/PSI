@@ -4,6 +4,7 @@ import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/rou
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-layout',
@@ -22,6 +23,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 })
 export class LayoutComponent {
   private readonly router = inject(Router);
+  readonly authService = inject(AuthService);
 
   get moduloAtual(): string {
     const url = this.router.url;
@@ -38,5 +40,9 @@ export class LayoutComponent {
       return 'Psicólogos';
     }
     return 'Dashboard';
+  }
+
+  encerrarSessao(): void {
+    this.authService.logout(true);
   }
 }

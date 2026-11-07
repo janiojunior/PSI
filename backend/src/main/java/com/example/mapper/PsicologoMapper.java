@@ -1,0 +1,128 @@
+package com.example.mapper;
+
+import com.example.dto.PsicologoDTO;
+import com.example.model.Pessoa;
+import com.example.model.Psicologo;
+import com.example.model.Telefone;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+@ApplicationScoped
+public class PsicologoMapper {
+
+    @Inject
+    TelefoneMapper telefoneMapper;
+
+    @Inject
+    MunicipioMapper municipioMapper;
+
+    public PsicologoDTO toDTO(Psicologo entity) {
+        if (entity == null) {
+            return null;
+        }
+        Pessoa pessoa = entity.getPessoa();
+        return new PsicologoDTO(
+            entity.getId(),
+            pessoa != null ? pessoa.getNome() : null,
+            pessoa != null ? pessoa.getCpf() : null,
+            pessoa != null ? pessoa.getEmail() : null,
+            pessoa != null ? pessoa.getDataNascimento() : null,
+            pessoa != null ? pessoa.getGenero() : null,
+            pessoa != null ? pessoa.getEndereco() : null,
+            pessoa != null && municipioMapper != null ? municipioMapper.toDTO(pessoa.getMunicipio()) : null,
+            pessoa != null && pessoa.getTelefones() != null && telefoneMapper != null
+                ? pessoa.getTelefones().stream().map(telefoneMapper::toDTO).toList()
+                : List.of(),
+            entity.getCrp(),
+            entity.getEspecialidade(),
+            entity.getBio(),
+            entity.getValorConsulta(),
+            entity.getDuracaoConsulta(),
+            entity.isAtivo()
+        );
+    }
+
+    public PsicologoDTO toDTOFromPessoa(Pessoa pessoa) {
+        if (pessoa == null) {
+            return null;
+        }
+        return new PsicologoDTO(
+            null,
+            pessoa.getNome(),
+            pessoa.getCpf(),
+            pessoa.getEmail(),
+            pessoa.getDataNascimento(),
+            pessoa.getGenero(),
+            pessoa.getEndereco(),
+            municipioMapper != null ? municipioMapper.toDTO(pessoa.getMunicipio()) : null,
+            pessoa.getTelefones() != null && telefoneMapper != null
+                ? pessoa.getTelefones().stream().map(telefoneMapper::toDTO).toList()
+                : List.of(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
+    public Psicologo toEntity(PsicologoDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+        Psicologo entity = new Psicologo();
+        entity.setId(dto.id());
+        entity.setPessoa(new Pessoa());
+        updateEntityFromDTO(dto, entity);
+        return entity;
+    }
+
+    public void updateEntityFromDTO(PsicologoDTO dto, Psicologo entity) {
+        if (dto == null || entity == null) {
+            return;
+        }
+        Pessoa pessoa = entity.getPessoa();
+        if (pessoa == null) {
+            pessoa = new Pessoa();
+            entity.setPessoa(pessoa);
+        }
+        if (dto.nome() != null) {
+            pessoa.setNome(dto.nome().trim());
+        }
+        if (dto.cpf() != null) {
+            pessoa.setCpf(dto.cpf().replaceAll("\\D", "").trim());
+        }
+        if (dto.email() != null) {
+            pessoa.setEmail(dto.email().trim().toLowerCase(Locale.ROOT));
+        }
+        if (dto.dataNascimento() != null) {
+            pessoa.setDataNascimento(dto.dataNascimento());
+        }
+        pessoa.setGenero(dto.genero() != null ? dto.genero().trim() : null);
+        pessoa.setEndereco(dto.endereco() != null ? dto.endereco().trim() : null);
+        if (dto.telefones() != null && telefoneMapper != null) {
+            List<Telefone> telefones = new ArrayList<>(dto.telefones().stream().map(telefoneMapper::toEntity).toList());
+            pessoa.setTelefones(telefones);
+        }
+        if (dto.crp() != null) {
+            entity.setCrp(dto.crp().trim().toUpperCase(Locale.ROOT));
+        }
+        if (dto.especialidade() != null) {
+            entity.setEspecialidade(dto.especialidade().trim());
+        }
+        entity.setBio(dto.bio() != null ? dto.bio().trim() : null);
+        if (dto.valorConsulta() != null) {
+            entity.setValorConsulta(dto.valorConsulta());
+        }
+        if (dto.duracaoConsulta() != null) {
+            entity.setDuracaoConsulta(dto.duracaoConsulta());
+        }
+        if (dto.ativo() != null) {
+            entity.setAtivo(dto.ativo());
+        }
+    }
+}

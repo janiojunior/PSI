@@ -45,17 +45,23 @@
       </nav>
     </div>
 
-    <!-- Rodapé da Sidebar: Perfil da Psicóloga / Admin -->
+    <!-- Rodapé da Sidebar: Perfil da Pessoa Autenticada -->
     <div class="sidebar-footer">
       <div class="profile-card">
         <div class="profile-avatar">
-          <span>HM</span>
+          <span>{{ authService.iniciaisUsuario() }}</span>
         </div>
         <div class="profile-info">
-          <span class="profile-name">Dra. Helena Martins</span>
-          <span class="profile-role">Admin · CRP 08/21940</span>
+          <span class="profile-name">{{ authService.usuario()?.nome || 'Usuário Autenticado' }}</span>
+          <span class="profile-role">{{ authService.perfilPrincipal() }}</span>
         </div>
-        <button class="logout-btn" title="Encerrar Sessão">
+        <button
+          type="button"
+          class="logout-btn"
+          title="Encerrar Sessão"
+          aria-label="Encerrar Sessão"
+          (click)="encerrarSessao()"
+        >
           <span class="material-symbols-outlined">logout</span>
         </button>
       </div>
@@ -84,16 +90,16 @@
         </div>
 
         <!-- Botão Notificações -->
-        <button class="icon-button notification-btn" title="Notificações">
+        <button type="button" class="icon-button notification-btn" title="Notificações" aria-label="Notificações">
           <span class="material-symbols-outlined">notifications</span>
           <span class="dot-indicator"></span>
         </button>
 
         <!-- Chip de Perfil do Topo -->
         <div class="header-user-chip">
-          <div class="user-avatar-sm">HM</div>
-          <span class="user-name">Dra. Helena</span>
-          <span class="material-symbols-outlined dropdown-icon">expand_more</span>
+          <div class="user-avatar-sm">{{ authService.iniciaisUsuario() }}</div>
+          <span class="user-name">{{ authService.usuario()?.nome || 'Autenticado' }}</span>
+          <span class="material-symbols-outlined dropdown-icon">verified_user</span>
         </div>
       </div>
     </header>

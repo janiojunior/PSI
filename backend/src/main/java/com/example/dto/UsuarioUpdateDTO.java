@@ -1,0 +1,25 @@
+package com.example.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import java.util.Set;
+
+public record UsuarioUpdateDTO(
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @Size(min = 15, max = 128, message = "A senha deve conter entre 15 e 128 caracteres")
+    String senha,
+
+    @NotNull(message = "O campo ativo é obrigatório")
+    Boolean ativo,
+
+    @NotEmpty(message = "Ao menos um perfil deve ser informado")
+    Set<@NotNull @Positive Long> perfis
+) {
+    @Override
+    public String toString() {
+        return "UsuarioUpdateDTO[senha=[PROTEGIDA], ativo=" + ativo + ", perfis=" + perfis + "]";
+    }
+}

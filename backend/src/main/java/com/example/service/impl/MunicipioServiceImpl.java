@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.dto.MunicipioDTO;
+import com.example.dto.PageResponse;
 import com.example.mapper.MunicipioMapper;
 import com.example.model.Estado;
 import com.example.model.Municipio;
@@ -31,6 +32,22 @@ public class MunicipioServiceImpl implements MunicipioService {
         return municipioRepository.listAllWithEstado().stream()
                 .map(municipioMapper::toDTO)
                 .toList();
+    }
+
+    @Override
+    public PageResponse<MunicipioDTO> findPaginated(int page, int pageSize) {
+        validarPaginacao(page, pageSize);
+        List<Municipio> items = municipioRepository.listPaginated(page, pageSize);
+        long total = municipioRepository.count();
+        return PageResponse.of(items, page, pageSize, total, municipioMapper::toDTO);
+    }
+
+    @Override
+    public PageResponse<MunicipioDTO> findByNome(String nome, int page, int pageSize) {
+        validarPaginacao(page, pageSize);
+        List<Municipio> items = municipioRepository.findByNomePaginated(nome, page, pageSize);
+        long total = municipioRepository.countByNome(nome);
+        return PageResponse.of(items, page, pageSize, total, municipioMapper::toDTO);
     }
 
     @Override
@@ -77,5 +94,11 @@ public class MunicipioServiceImpl implements MunicipioService {
         Long idEstado = dto.estado().id();
         return estadoRepository.findByIdOptional(idEstado)
                 .orElseThrow(() -> new NotFoundException("Estado com ID " + idEstado + " não encontrado."));
+    }
+
+    private void validarPaginacao(int page, int pageSize) {
+        if (page < 0 || pageSize < 1 || pageSize > 100) {
+            throw new BadRequestException("Use página não negativa e tamanho entre 1 e 100.");
+        }
     }
 }

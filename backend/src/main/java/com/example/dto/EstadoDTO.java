@@ -1,5 +1,6 @@
 package com.example.dto;
 
+import com.example.model.Regiao;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -12,9 +13,15 @@ public record EstadoDTO(
 
     @NotBlank(message = "O nome é obrigatório")
     @Size(min = 2, max = 100, message = "O nome deve conter entre 2 e 100 caracteres")
-    String nome
+    String nome,
+
+    Regiao regiao
 ) {
+    public EstadoDTO(Long id, String sigla, String nome) {
+        this(id, sigla, nome, null);
+    }
+
     public EstadoDTO withId(Long generatedId) {
-        return new EstadoDTO(generatedId, this.sigla(), this.nome());
+        return new EstadoDTO(generatedId, this.sigla(), this.nome(), this.regiao());
     }
 }

@@ -1,0 +1,121 @@
+<div class="login-shell">
+  <div class="login-card">
+    @if (authService.loading()) {
+      <mat-progress-bar mode="indeterminate" class="stitch-progress-bar"></mat-progress-bar>
+    }
+
+    <!-- Identidade da Clínica -->
+    <div class="login-brand">
+      <div class="brand-badge">
+        <span class="material-symbols-outlined">psychology</span>
+      </div>
+      <div class="brand-titles">
+        <h1 class="login-title">PSI Clínica</h1>
+        <p class="login-subtitle">Plataforma de Gestão Psicológica · Acesso Seguro JWT</p>
+      </div>
+    </div>
+
+    <!-- Alerta de erro de autenticação -->
+    @if (authService.error(); as msgErro) {
+      <div class="auth-error-banner" role="alert">
+        <span class="material-symbols-outlined">error</span>
+        <span>{{ msgErro }}</span>
+      </div>
+    }
+
+    <!-- Formulário Reativo de Login -->
+    <form [formGroup]="form" (ngSubmit)="entrar()" class="login-form" novalidate>
+      <div class="form-field-group">
+        <label for="login_email" class="field-label">
+          E-mail Institucional <span class="required-mark">*</span>
+        </label>
+        <div class="input-with-icon">
+          <span class="material-symbols-outlined input-prefix-icon">mail</span>
+          <input
+            id="login_email"
+            type="email"
+            formControlName="login"
+            class="stitch-input"
+            [class.has-error]="form.get('login')?.invalid && form.get('login')?.touched"
+            placeholder="ex: admin@psi.com.br"
+            autocomplete="username"
+          />
+        </div>
+        @if (form.get('login')?.invalid && form.get('login')?.touched) {
+          <div class="error-msg">
+            <span class="material-symbols-outlined">error</span>
+            @if (form.get('login')?.errors?.['required']) {
+              <span>O login é obrigatório.</span>
+            } @else if (form.get('login')?.errors?.['email']) {
+              <span>Informe um endereço de e-mail válido.</span>
+            }
+          </div>
+        } @else {
+          <span class="field-hint">Utilize o e-mail vinculado ao seu cadastro no sistema.</span>
+        }
+      </div>
+
+      <div class="form-field-group">
+        <label for="login_senha" class="field-label">
+          Senha de Acesso <span class="required-mark">*</span>
+        </label>
+        <div class="input-with-icon">
+          <span class="material-symbols-outlined input-prefix-icon">lock</span>
+          <input
+            id="login_senha"
+            [type]="mostrarSenha() ? 'text' : 'password'"
+            formControlName="senha"
+            class="stitch-input input-password"
+            [class.has-error]="form.get('senha')?.invalid && form.get('senha')?.touched"
+            placeholder="Digite sua senha de acesso"
+            autocomplete="current-password"
+          />
+          <button
+            type="button"
+            class="toggle-password-btn"
+            (click)="alternarVisibilidadeSenha()"
+            [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+            [title]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'"
+          >
+            <span class="material-symbols-outlined">
+              {{ mostrarSenha() ? 'visibility_off' : 'visibility' }}
+            </span>
+          </button>
+        </div>
+        @if (form.get('senha')?.invalid && form.get('senha')?.touched) {
+          <div class="error-msg">
+            <span class="material-symbols-outlined">error</span>
+            <span>A senha é obrigatória.</span>
+          </div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn-login"
+        [disabled]="form.invalid || authService.loading()"
+      >
+        <span class="material-symbols-outlined">login</span>
+        <span>{{ authService.loading() ? 'Autenticando...' : 'Entrar no Sistema' }}</span>
+      </button>
+    </form>
+
+    <!-- Atalho para credenciais iniciais (Ambiente de Desenvolvimento) -->
+    <div class="dev-credentials-box">
+      <div class="dev-credentials-info">
+        <span class="material-symbols-outlined">verified_user</span>
+        <div>
+          <strong>Acesso Inicial (Seed V1.0.4):</strong>
+          <span>admin&#64;psi.com.br · Perfil Administrador</span>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="btn-fill-demo"
+        (click)="preencherCredenciaisAdminPadrao()"
+      >
+        Preencher
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,8 @@
 package com.example.model;
 
+import com.example.model.converterjpa.RegiaoConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,19 +18,28 @@ public class Estado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sigla", length = 2, nullable = false)
+    @Column(name = "sigla", length = 2, nullable = false, unique = true)
     private String sigla;
 
     @Column(name = "nome", length = 100, nullable = false)
     private String nome;
 
+    @Convert(converter = RegiaoConverter.class)
+    @Column(name = "regiao")
+    private Regiao regiao;
+
     public Estado() {
     }
 
     public Estado(Long id, String sigla, String nome) {
+        this(id, sigla, nome, null);
+    }
+
+    public Estado(Long id, String sigla, String nome, Regiao regiao) {
         this.id = id;
         this.sigla = sigla;
         this.nome = nome;
+        this.regiao = regiao;
     }
 
     public Long getId() {
@@ -53,6 +64,14 @@ public class Estado {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Regiao getRegiao() {
+        return regiao;
+    }
+
+    public void setRegiao(Regiao regiao) {
+        this.regiao = regiao;
     }
 
     @Override

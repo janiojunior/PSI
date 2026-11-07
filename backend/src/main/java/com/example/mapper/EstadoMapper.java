@@ -14,7 +14,8 @@ public class EstadoMapper {
         return new EstadoDTO(
             entity.getId(),
             entity.getSigla(),
-            entity.getNome()
+            entity.getNome(),
+            entity.getRegiao()
         );
     }
 
@@ -26,6 +27,7 @@ public class EstadoMapper {
         entity.setId(dto.id());
         entity.setSigla(dto.sigla() != null ? dto.sigla().toUpperCase().trim() : null);
         entity.setNome(dto.nome() != null ? dto.nome().trim() : null);
+        entity.setRegiao(dto.regiao());
         return entity;
     }
 
@@ -38,6 +40,9 @@ public class EstadoMapper {
         }
         if (dto.nome() != null) {
             entity.setNome(dto.nome().trim());
+        }
+        if (dto.regiao() != null) {
+            entity.setRegiao(dto.regiao());
         }
     }
 }
